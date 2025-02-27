@@ -1,8 +1,9 @@
 plugins {
     id("java")
+    alias(libs.plugins.gradle.test.logger)
 }
 
-group = "org.cards"
+group = "org.test.wiremock"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -10,8 +11,22 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(libs.assertj)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.engine)
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.testcontainers.junit)
+    testImplementation(libs.testcontainers.wiremock)
+    testImplementation(libs.wiremock)
+
+    testRuntimeOnly(libs.junit.launcher)
+}
+
+javaToolchains {
+    java.toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 tasks.test {
