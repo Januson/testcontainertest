@@ -26,8 +26,6 @@ jobs:
       - add_ssh_keys
       - attach_workspace:
           at: .
-      - gradle_config
-      - build_restore_cache
       - run:
           name: Run tests
           command: |
