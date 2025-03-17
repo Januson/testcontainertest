@@ -22,8 +22,12 @@ jobs:
 
   test:
     executor: openjdk17
+    services:
+      - docker
     steps:
       - add_ssh_keys
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - run:
