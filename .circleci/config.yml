@@ -1,0 +1,42 @@
+version: 2.1
+
+executors:
+  openjdk17:
+    docker:
+      - image: cimg/openjdk:17.0
+
+jobs:
+  build:
+    executor: openjdk17
+    steps:
+      - add_ssh_keys
+      - checkout
+      - run:
+          name: Build
+          command: |
+            ./gradlew --no-daemon assemble
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./
+
+  test:
+    executor: openjdk17
+    steps:
+      - add_ssh_keys
+      - attach_workspace:
+          at: .
+      - gradle_config
+      - build_restore_cache
+      - run:
+          name: Run tests
+          command: |
+            ./gradlew --no-daemon test
+
+workflows:
+  build:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
