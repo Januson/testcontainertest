@@ -18,6 +18,8 @@ public class TestServiceContainer extends GenericContainer<TestServiceContainer>
     }
 
     String baseUrl() {
-        return "http://localhost:%d".formatted(getMappedPort(PORT));
+        return "http://%s:%d".formatted(
+            this.getHost(),
+            this.getMappedPort(PORT));
     }
 }
