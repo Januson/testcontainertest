@@ -2,7 +2,6 @@ package wiremock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
@@ -27,14 +26,14 @@ class WireMockContainerJunit5Test {
 
         String template = """
             BaseURL: %s
-            MapperURL: %s
-            Port: 8080 -> %s
+            Port mapping: 8080 -> %s
+            First port: %s
             %n""";
         System.out.printf(
             template,
             wiremockServer.baseUrl(),
-            wiremockServer.baseUrl(),
-            wiremockServer.getMappedPort(8080)
+            wiremockServer.getMappedPort(8080),
+            wiremockServer.getFirstMappedPort()
         );
     }
 
