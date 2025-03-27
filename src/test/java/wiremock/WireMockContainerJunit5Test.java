@@ -23,7 +23,7 @@ class WireMockContainerJunit5Test {
         wiremockServer = new TestServiceContainer(NETWORK);
         wiremockServer.start();
 
-        waitForWireMock();
+//        waitForWireMock();
 
         String template = """
             BaseURL: %s
