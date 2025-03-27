@@ -23,7 +23,7 @@ public class TestClient {
     }
 
     private String doCall() throws IOException, InterruptedException {
-        var url = wiremockServer.mappedUrl();
+        var url = wiremockServer.baseUrl();
         var request =
             HttpRequest
                 .newBuilder()

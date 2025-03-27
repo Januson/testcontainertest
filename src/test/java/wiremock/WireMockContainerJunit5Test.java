@@ -1,6 +1,5 @@
 package wiremock;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Network;
@@ -35,7 +34,7 @@ class WireMockContainerJunit5Test {
         System.out.printf(
             template,
             wiremockServer.baseUrl(),
-            wiremockServer.mappedUrl(),
+            wiremockServer.baseUrl(),
             wiremockServer.getMappedPort(8080)
         );
     }
@@ -53,7 +52,7 @@ class WireMockContainerJunit5Test {
     }
 
     private void waitForWireMock() {
-        var url = wiremockServer.mappedUrl();
+        var url = wiremockServer.baseUrl();
         var request = HttpRequest.newBuilder()
             .uri(URI.create(url + "/__admin/mappings"))
             .GET()

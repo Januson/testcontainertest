@@ -43,7 +43,7 @@ public class TestStubber {
     }
 
     private void createWireMockMapping(String requestBody) throws IOException, InterruptedException {
-        var url = wiremockServer.mappedUrl();
+        var url = wiremockServer.baseUrl();
         var request =
             HttpRequest
                 .newBuilder()
