@@ -2,6 +2,7 @@ package wiremock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
@@ -14,12 +15,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 class WireMockContainerJunit5Test {
-
+    private static final Network NETWORK = Network.newNetwork();
     TestServiceContainer wiremockServer;
 
     @BeforeEach
     void setUp() {
-        wiremockServer = new TestServiceContainer();
+        wiremockServer = new TestServiceContainer(NETWORK);
         wiremockServer.start();
 
         waitForWireMock();
