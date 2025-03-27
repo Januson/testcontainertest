@@ -13,8 +13,9 @@ public class TestServiceContainer extends GenericContainer<TestServiceContainer>
         super(IMAGE);
         this
             // We need to expose a port to be able to add wiremock stubbings later
-            .withExposedPorts(PORT)
             .withNetwork(network)
+            .withNetworkAliases("wiremock")
+            .withExposedPorts(PORT)
             .waitingFor(Wait.forHttp("/__admin/mappings").forStatusCode(200));
         ;
     }
