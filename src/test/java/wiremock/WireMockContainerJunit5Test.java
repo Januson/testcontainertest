@@ -3,11 +3,11 @@ package wiremock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Network;
-
-import java.util.stream.Collectors;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Testcontainers
 class WireMockContainerJunit5Test {
 
     TestServiceContainer wiremockServer;
@@ -17,20 +17,17 @@ class WireMockContainerJunit5Test {
         wiremockServer = new TestServiceContainer(Network.newNetwork());
         wiremockServer.start();
 
+        String template = """
+            BaseURL: %s
+            MapperURL: %s
+            Port: 8080 -> %s
+            %n""";
         System.out.printf(
-            """
-                BaseURL: %s
-                MapperURL: %s
-                Port: 8080 -> %s
-                %n
-            """,
+            template,
             wiremockServer.baseUrl(),
             wiremockServer.mappedUrl(),
             wiremockServer.getMappedPort(8080)
         );
-        System.out.println("BaseURL: " + wiremockServer.baseUrl());
-        System.out.println("MapperURL: " + wiremockServer.mappedUrl());
-        System.out.println("Ports: " + String.join(", ", wiremockServer.getPortBindings()));
     }
 
     @Test
