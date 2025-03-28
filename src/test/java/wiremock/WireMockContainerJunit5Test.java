@@ -2,7 +2,10 @@ package wiremock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
@@ -15,15 +18,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 class WireMockContainerJunit5Test {
+
+    private static final Logger LOG = LoggerFactory.getLogger("logz");
+    private static final Slf4jLogConsumer CONTAINER_LOG_CONSUMER = new Slf4jLogConsumer(LOG);
+
     private static final Network NETWORK = Network.newNetwork();
-    TestServiceContainer wiremockServer;
+    TestServiceContainer service;
+    TestAppContainer app;
 
     @BeforeEach
     void setUp() {
-        wiremockServer = new TestServiceContainer(NETWORK);
-        wiremockServer.start();
+        service = new TestServiceContainer(NETWORK);
+        service.start();
+        app = new TestAppContainer(NETWORK, service);
+        app.start();
+        app.followOutput(CONTAINER_LOG_CONSUMER);
 
-//        waitForWireMock();
+        waitForWireMock();
 
         String template = """
             BaseURL: %s
@@ -32,17 +43,17 @@ class WireMockContainerJunit5Test {
             %n""";
         System.out.printf(
             template,
-            wiremockServer.baseUrl(),
-            wiremockServer.getMappedPort(8080),
-            wiremockServer.getFirstMappedPort()
+            service.baseUrl(),
+            service.getMappedPort(8080),
+            service.getFirstMappedPort()
         );
     }
 
     @Test
     void helloWorld() {
         String body = "{\"accessRights\":{\"read\":true,\"write\":true}}";
-        var stubber = new TestStubber(wiremockServer);
-        TestClient client = new TestClient(wiremockServer);
+        var stubber = new TestStubber(service);
+        TestClient client = new TestClient(service);
         stubber.stubTestEndpoint(body);
 
         String response = client.testCall();
@@ -51,7 +62,7 @@ class WireMockContainerJunit5Test {
     }
 
     private void waitForWireMock() {
-        var url = wiremockServer.baseUrl();
+        var url = service.baseUrl();
         var request = HttpRequest.newBuilder()
             .uri(URI.create(url + "/__admin/mappings"))
             .GET()

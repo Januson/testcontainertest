@@ -6,15 +6,47 @@ executors:
       - image: cimg/openjdk:17.0
 
 jobs:
+  build-docker-image:
+    executor: docker-executor
+    steps:
+      - checkout
+
+      # Enable Docker in the job
+      - setup_remote_docker:
+          version: 20.10.24  # Use the latest available version
+
+      # Build the Docker image
+      - run:
+          name: Build Docker Image
+          command: docker build -t my-java-app:latest .
+
+      # Save the Docker image as a tar file for use in the next job
+      - run:
+          name: Save Docker Image for Testcontainers
+          command: docker save my-java-app:latest -o my-java-app.tar
+
+      # Persist the image so it can be loaded in test jobs
+      - persist_to_workspace:
+          root: .
+          paths:
+            - my-java-app.tar
+
   build:
     executor: openjdk17
     steps:
-      - add_ssh_keys
       - checkout
+      - setup_remote_docker:
+          version: 20.10.24
       - run:
           name: Build
           command: |
             ./gradlew --no-daemon assemble
+      - run:
+          name: Build Docker Image
+          command: docker build -t test-app:latest .
+      - run:
+          name: Save Docker Image for Testcontainers
+          command: docker save test-app:latest -o test-app.tar
       - persist_to_workspace:
           root: .
           paths:
@@ -28,6 +60,9 @@ jobs:
           docker_layer_caching: true
       - attach_workspace:
           at: .
+      - run:
+          name: Load Docker Image
+          command: docker load -i test-app.tar
       - run:
           name: Run tests
           command: |
