@@ -19,9 +19,8 @@ public class TestAppContainer extends GenericContainer<TestAppContainer> {
         this
             // We need to expose a port to be able to add wiremock stubbings later
             .withNetwork(network)
-            .withNetworkAliases("wiremock")
             .withExposedPorts(8080)
-            .withEnv("TEST_HOST", "http://%s:%s".formatted(service.getHost(), service.getFirstMappedPort()))
+            .withEnv("TEST_HOST", "http://wiremock:%s".formatted(service.getFirstMappedPort()))
             .withLogConsumer(CONTAINER_LOG_CONSUMER)
             .waitingFor(Wait.forListeningPort());
         ;
