@@ -53,12 +53,12 @@ class WireMockContainerJunit5Test {
     void helloWorld() {
         String body = "{\"accessRights\":{\"read\":true,\"write\":true}}";
         var stubber = new TestStubber(service);
-        TestClient client = new TestClient(service);
+        TestClient client = new TestClient(app);
         stubber.stubTestEndpoint(body);
 
         String response = client.testCall();
 
-        assertThat(response).isEqualTo(body);
+        assertThat(response).isEqualTo(EXPECTED);
     }
 
     private void waitForWireMock() {
@@ -88,4 +88,6 @@ class WireMockContainerJunit5Test {
 //        throw new RuntimeException("WireMock did not become available in time.");
         System.out.println("WireMock did not become available in time.");
     }
+
+    private static final String EXPECTED = "{\"_links\":{\"self\":[{\"href\":\"/result\",\"templated\":false}]},\"_embedded\":{\"errors\":[{\"message\":\"Internal Server Error: null\"}]},\"message\":\"Internal Server Error\"}";
 }

@@ -1,8 +1,11 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("application")
     id("java")
+    id("io.micronaut.application") version "4.4.4"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     alias(libs.plugins.gradle.test.logger)
 }
 
@@ -13,7 +16,22 @@ repositories {
     mavenCentral()
 }
 
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("org.test.testcontainers.*")
+    }
+}
+
 dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+//    compileOnly("io.micronaut:micronaut-http-client")
+//    runtimeOnly("ch.qos.logback:logback-classic")
+
     testImplementation(libs.assertj)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.api)
@@ -33,12 +51,12 @@ javaToolchains {
 }
 
 application {
-    mainClass.set("org.test.testcontainers.Main")
+    mainClass.set("org.test.testcontainers.Application")
 }
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "org.test.testcontainers.Main"
+        attributes["Main-Class"] = "org.test.testcontainers.Application"
     }
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -70,4 +88,9 @@ testlogger {
     showSkippedStandardStreams = true
     showFailedStandardStreams = true
     logLevel = LogLevel.LIFECYCLE
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    archiveBaseName.set("app")
+    archiveClassifier.set("")
 }

@@ -8,10 +8,10 @@ import java.net.http.HttpResponse;
 
 public class TestClient {
     private final HttpClient client = HttpClient.newHttpClient();
-    private final TestServiceContainer wiremockServer;
+    private final TestAppContainer app;
 
-    public TestClient(TestServiceContainer wiremockServer) {
-        this.wiremockServer = wiremockServer;
+    public TestClient(TestAppContainer app) {
+        this.app = app;
     }
 
     public String testCall() {
@@ -23,12 +23,12 @@ public class TestClient {
     }
 
     private String doCall() throws IOException, InterruptedException {
-        var url = wiremockServer.baseUrl();
+        var url = "http://localhost:" + app.getMappedPort(8080);
         var request =
             HttpRequest
                 .newBuilder()
-                .uri(URI.create(url + "/api/v2/entity/access"))
-                .header("Content-Type", "application/json")
+                .uri(URI.create(url + "/result"))
+                .header("Content-Type", "text/plain")
                 .GET()
                 .build();
 

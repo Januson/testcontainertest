@@ -1,22 +1,30 @@
 package org.test.testcontainers;
 
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException {
+@Controller("/result")
+public class ResultController {
+
+    @Get
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getResult() throws IOException, InterruptedException {
         String testHost = System.getenv("TEST_HOST");
         if (testHost == null || testHost.isBlank()) {
             throw new IllegalArgumentException("TEST_HOST is not set");
         }
-        String mappings = getMappings(testHost);
-        System.out.println("WireMock Mappings: " + mappings);
+        return getMappings(testHost);
     }
 
-    public static String getMappings(String testHost) throws IOException, InterruptedException {
+    public String getMappings(String testHost) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(testHost + "/__admin/mappings"))
@@ -31,5 +39,4 @@ public class Main {
             throw new RuntimeException("Failed to get mappings: HTTP " + response.statusCode());
         }
     }
-
 }
