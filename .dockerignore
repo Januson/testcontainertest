@@ -1,0 +1,8 @@
+*
+!gradlew
+!gradlew.bat
+!gradle.properties
+!*gradle.kts
+
+!**/gradle/**
+!**/src/main/**
