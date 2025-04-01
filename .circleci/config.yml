@@ -1,6 +1,10 @@
 version: 2.1
 
 executors:
+  ubuntu:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
   openjdk17:
     docker:
       - image: cimg/openjdk:17.0
@@ -53,7 +57,7 @@ jobs:
             - ./
 
   test:
-    executor: openjdk17
+    executor: ubuntu
     steps:
       - add_ssh_keys
       - setup_remote_docker:
